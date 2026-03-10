@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>{% if form.instance.pk %}Update Expense{% else %}Add Purchase{% endif %}</h2>
+
+<form method="post" autocomplete="off">
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label for="{{ form.product.id_for_label }}">Product</label>
+        {{ form.product }}
+        {% if form.product.errors %}
+            <div class="text-danger small">{{ form.product.errors }}</div>
+        {% endif %}
+        <a href="{% url 'expenses:add_product' %}" class="btn btn-sm btn-secondary mt-1">Add Product</a>
+    </div>
+
+    <div class="mb-3">
+        <label for="{{ form.quantity.id_for_label }}">Quantity</label>
+        {{ form.quantity }}
+        {% if form.quantity.errors %}
+            <div class="text-danger small">{{ form.quantity.errors }}</div>
+        {% endif %}
+    </div>
+
+    <button type="submit" class="btn btn-success">{% if form.instance.pk %}Update{% else %}Add{% endif %}</button>
+    <a href="{% url 'expenses:expense_list' %}" class="btn btn-secondary">Cancel</a>
+</form>
+
+{% endblock %}

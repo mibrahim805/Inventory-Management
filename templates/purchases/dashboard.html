@@ -1,0 +1,135 @@
+{#{% extends "base.html" %}#}
+{##}
+{#{% block content %}#}
+{##}
+{#<h1>Dashboard</h1>#}
+{##}
+{#<div class="row mb-4">#}
+{#    <div class="col-md-3">#}
+{#        <div class="card text-center">#}
+{#            <div class="card-body">#}
+{#                <h5>Total Products</h5>#}
+{#                <p>{{ total_products }}</p>#}
+{#                <a href="{% url 'expenses:product_list'%}" class="btn btn-sm btn-warning">View Products</a>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#    <div class="col-md-3">#}
+{#        <div class="card text-center">#}
+{#            <div class="card-body">#}
+{#                <h5>Total Purchases</h5>#}
+{#                <p>{{ total_purchases }}</p>#}
+{#                <a href="{% url 'expenses:purchase_report'%}" class="btn btn-sm btn-warning">View Purchases</a>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#    <div class="col-md-3">#}
+{#        <div class="card text-center">#}
+{#            <div class="card-body">#}
+{#                <h5>Total Sales</h5>#}
+{#                <p>{{ total_sales }}</p>#}
+{#                <a href="{% url 'expenses:sale_report'%}" class="btn btn-sm btn-warning">View Sales</a>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#    <div class="col-md-3">#}
+{#        <div class="card text-center">#}
+{#            <div class="card-body">#}
+{#                <h5>Total Stock</h5>#}
+{#                <p>{{ total_stock }}</p>#}
+{#                <a href="{% url 'expenses:stock_report'%}" class="btn btn-sm btn-warning">View Stock</a>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#</div>#}
+{#     <form method="get" action="{% url 'expenses:add_sale' %}">#}
+{#            {% csrf_token %}#}
+{#            <button type="submit" class="btn btn-secondary">Add Sale</button>#}
+{#        </form>#}
+{##}
+{#        <form method="get" action="{% url 'expenses:add_purchase' %}">#}
+{#            {% csrf_token %}#}
+{#            <button type="submit" class="btn btn-secondary">Add Purchase</button>#}
+{#        </form>#}
+{#{% endblock %}#}
+
+
+{% extends "base.html" %}
+
+{% block content %}
+
+{#<div class="container mt-4">#}
+    
+<h2 class="mb-4">Dashboard</h2>
+
+<div class="row g-4">
+
+    <div class="col-md-3">
+        <div class="card shadow-sm text-center h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Total Products</h6>
+                <h3 class="fw-bold">{{ total_products }}</h3>
+                <a href="{% url 'expenses:product_list' %}" class="btn btn-sm btn-outline-primary mt-2">View Products</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm text-center h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Total Purchases</h6>
+                <h3 class="fw-bold">{{ total_purchases }}</h3>
+                <a href="{% url 'expenses:purchase_report' %}" class="btn btn-sm btn-outline-primary mt-2">View Purchases</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm text-center h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Total Sales</h6>
+                <h3 class="fw-bold">{{ total_sales }}</h3>
+                <a href="{% url 'expenses:sale_report' %}" class="btn btn-sm btn-outline-primary mt-2">View Sales</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm text-center h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Total Stock</h6>
+                <h3 class="fw-bold">{{ total_stock }}</h3>
+                <a href="{% url 'expenses:stock_report' %}" class="btn btn-sm btn-outline-primary mt-2">View Stock</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="card shadow-sm mt-5">
+    <div class="card-body text-center">
+
+        <h5 class="mb-3">Quick Actions</h5>
+
+        <div class="d-flex justify-content-center gap-3">
+
+            <form method="get" action="{% url 'expenses:add_sale' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success">Add Sale</button>
+            </form>
+
+            <form method="get" action="{% url 'expenses:add_purchase' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">Add Purchase</button>
+            </form>
+            
+            <form method="get" action="{% url 'expenses:add_product' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">Add Product</button>
+            </form>
+
+        </div>
+
+    </div>
+{% endblock %}

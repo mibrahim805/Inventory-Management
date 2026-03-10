@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+    
+    <h2>Product Report</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Purchased</th>
+            <th>Sold</th>
+            <th>Remaining</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.purchased|default:0 }}</td>
+            <td>{{ product.sold|default:0 }}</td>
+            <td>{{ product.stock|default:0 }}</td>
+        <td>
+            <a href="{% url 'expenses:update_product' product.id %}" class="btn btn-sm btn-warning">Update</a>
+            <a href="{% url 'expenses:delete_product' product.id %}" class="btn btn-sm btn-danger"
+                   onclick="return confirm('Are you sure you want to delete this expense?');">
+                Delete
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+{% endblock %}
+
+
+
+
+
