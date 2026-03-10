@@ -1,13 +1,13 @@
-from django.contrib import messages, auth
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.db.models import Sum, F, Q, OuterRef, Subquery, IntegerField
+from django.db.models import Sum, OuterRef, Subquery, IntegerField
 from django.db.models.functions import Coalesce
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, TemplateView
 from django.views.generic import UpdateView,DeleteView
 from expenses.forms import PurchaseForm, RegistrationForm, ProductForm, SaleForm
-from expenses.models import Purchase, Product, Purchase, Sale
+from expenses.models import Product, Purchase, Sale
 
 
 class RegisterUserView(CreateView):
@@ -107,7 +107,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         user_products = Product.objects.filter(user=self.request.user)
         purchase_totals = Purchase.objects.filter(product=OuterRef("pk"), user=self.request.user).values("product").annotate(total=Sum("quantity")).values("total")
         sale_totals = Sale.objects.filter(product=OuterRef("pk"), user=self.request.user).values("product").annotate(total=Sum("quantity")).values("total")
-        products = user_products.annotate(purchased=Coalesce(Subquery(purchase_totals, output_field=IntegerField()), 0),sold=Coalesce(Subquery(sale_totals, output_field=IntegerField()), 0))
+        products = user_products.annotate(purchased=Coalesce(Subquery(purchase_totals, output_field=IntegerField()), 0),sold=Coalesce(Subquery(sale_totals, output_field=IntegerField()),0))
         context["total_products"] = user_products.count()
         context["total_purchases"] = Purchase.objects.filter(user=self.request.user).aggregate(total=Coalesce(Sum("quantity"), 0))["total"]
         context["total_sales"] = Sale.objects.filter(user=self.request.user).aggregate(total=Coalesce(Sum("quantity"), 0))["total"]
