@@ -98,7 +98,7 @@ class SaleCreateView(LoginRequiredMixin, CreateView):
         kwargs['user'] = self.request.user
         return kwargs
 
-
+# johfewfhewfh
 class ProductReportView(LoginRequiredMixin, TemplateView):
     template_name="products/product_list.html"
 
