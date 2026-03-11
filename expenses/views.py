@@ -99,23 +99,6 @@ class SaleCreateView(LoginRequiredMixin, CreateView):
         return kwargs
 
 
-class DashboardView(LoginRequiredMixin, TemplateView):
-    template_name = "purchases/dashboard.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user_products = Product.objects.filter(user=self.request.user)
-        purchase_totals = Purchase.objects.filter(product=OuterRef("pk"), user=self.request.user).values("product").annotate(total=Sum("quantity")).values("total")
-        sale_totals = Sale.objects.filter(product=OuterRef("pk"), user=self.request.user).values("product").annotate(total=Sum("quantity")).values("total")
-        products = user_products.annotate(purchased=Coalesce(Subquery(purchase_totals, output_field=IntegerField()), 0),sold=Coalesce(Subquery(sale_totals, output_field=IntegerField()),0))
-        context["total_products"] = user_products.count()
-        context["total_purchases"] = Purchase.objects.filter(user=self.request.user).aggregate(total=Coalesce(Sum("quantity"), 0))["total"]
-        context["total_sales"] = Sale.objects.filter(user=self.request.user).aggregate(total=Coalesce(Sum("quantity"), 0))["total"]
-        context["total_stock"] = user_products.aggregate(total=Coalesce(Sum("stock"), 0))["total"]
-        context["products"] = products
-        return context
-
-
 class ProductReportView(LoginRequiredMixin, TemplateView):
     template_name="products/product_list.html"
 
@@ -127,7 +110,6 @@ class ProductReportView(LoginRequiredMixin, TemplateView):
         products=user_products.annotate(purchased=Coalesce(Subquery(purchase_totals,output_field=IntegerField()),0),sold=Coalesce(Subquery(sale_totals,output_field=IntegerField()),0))
         context["products"]=products
         return context
-
 
 class PurchaseListView(LoginRequiredMixin, ListView):
     model = Purchase
@@ -151,3 +133,35 @@ class StockListView(LoginRequiredMixin, ListView):
     context_object_name = "products"
     def get_queryset(self):
         return Product.objects.filter(user=self.request.user).order_by("name")
+
+
+
+class DashboardView(LoginRequiredMixin, TemplateView):
+    template_name = "purchases/dashboard.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        start_date = self.request.GET.get("start_date")
+        end_date = self.request.GET.get("end_date")
+
+        user_products = Product.objects.filter(user=self.request.user)
+
+        if start_date and end_date:
+            purchases = Purchase.objects.filter(user=self.request.user, created_at__date__range=[start_date, end_date])
+            sales = Sale.objects.filter(user=self.request.user, created_at__date__range=[start_date, end_date])
+        else:
+            purchases = Purchase.objects.filter(user=self.request.user)
+            sales = Sale.objects.filter(user=self.request.user)
+
+        for product in user_products:
+            product.purchased = purchases.filter(product=product).aggregate(total=Sum("quantity"))["total"] or 0
+            product.sold = sales.filter(product=product).aggregate(total=Sum("quantity"))["total"] or 0
+
+        context["products"] = user_products
+        context["total_products"] = user_products.count()
+        context["total_purchases"] = purchases.aggregate(total=Sum("quantity"))["total"] or 0
+        context["total_sales"] = sales.aggregate(total=Sum("quantity"))["total"] or 0
+        context["total_stock"] = user_products.aggregate(total=Sum("stock"))["total"] or 0
+        context["start_date"] = start_date
+        context["end_date"] = end_date
+        return context
